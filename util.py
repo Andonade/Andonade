@@ -2,12 +2,13 @@ import datetime
 import json
 import requests
 import base64
+import os
 
 filled_char = '█'
 empty_char = '░'
 STAT_URL = 'https://wakatime.com/api/v1/users/current/stats/last_7_days'
 DURATION_URL = 'https://wakatime.com/api/v1/users/current/durations?date='
-API_Key = 'WAKA_API_KEY'
+API_Key = os.environ.get('WAKATIME_API_KEY')
 headers = {'Authorization': 'Basic ' + base64.b64encode(API_Key.encode('utf-8')).decode('utf-8')}
 response = requests.get(STAT_URL, headers=headers)
 data = json.loads(response.text)['data']

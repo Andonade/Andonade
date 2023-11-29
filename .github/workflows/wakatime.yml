@@ -7,6 +7,8 @@ jobs:
     name: Update this repo's README with stats from WakaTime
     runs-on: ubuntu-latest
     permissions: write-all
+    env:
+      TZ: Asia/Shanghai
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,16 +17,14 @@ jobs:
         with:
           python-version: 3.10.12
           cache: 'pip'
+      - name: Update pip
+        run: python -m pip install --upgrade pip
       - name: Install dependencies
-        run: ｜
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
+      - name: Setup WakaTime API Key
+        run: echo "WAKATIME_API_KEY=${{ secrets.WAKA_API_KEY }}" >> $GITHUB_ENV
       - name: Run script
-        env:
-          WAKATIME_API_KEY: ${{ secrets.WAKA_API_KEY }}
-        run: ｜
-          sed -i 's/API_KEY/WAKATIME_API_KEY/g' util.py
-          python action.py
+        run: python action.py
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Update README.md with the latest stats
