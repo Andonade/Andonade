@@ -60,7 +60,7 @@ def get_activity() -> str:
             hour_str += '|'
             total = round(total / 60)
             hours, minutes = divmod(total, 60)
-            activity += '{:<10}\t{:<25}\t'.format(date_str, hour_str)
+            activity += '{:<10}\t{:<30}\t'.format(date_str, hour_str)
             if hours > 1:
                 activity += f'{hours} hrs '
             elif hours == 1:
