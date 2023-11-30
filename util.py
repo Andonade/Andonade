@@ -43,30 +43,31 @@ def get_activity() -> str:
     activity += '\t\t|🕐      🕗     🕓      🕛|\tcoding hours\n'
     for i in range(6, -1, -1):
         res = requests.get(DURATION_URL + date[i].strftime('%Y-%m-%d'), headers=headers)
-        activity += f"{date[i].strftime('%m-%d %a')}\t"
+        date_str = f"{date[i].strftime('%m-%d %a')}\t"
         if res.status_code == 200:
             active = [False] * 24
             projects = json.loads(res.text)['data']
             total = 0.0
+            hour_str = '|'
             for p in projects:
                 start_dt = datetime.datetime.fromtimestamp(p['time'])
                 end_dt = datetime.datetime.fromtimestamp(p['time'] + p['duration'])
                 total += p['duration']
                 for hr in range(start_dt.hour, end_dt.hour + 1):
                     active[hr] = True
-            activity += '|'
             for hr in range(24):
-                activity += filled_char if active[hr] else empty_char
-            activity += '|\t'
+                hour_str += filled_char if active[hr] else empty_char
+            hour_str += '|'
             total = round(total / 60)
             hours, minutes = divmod(total, 60)
+            activity += '{:<10}\t{:<25}\t'.format(date_str, hour_str)
             if hours > 1:
                 activity += f'{hours} hrs '
             elif hours == 1:
                 activity += '1 hr '
             activity += f'{minutes} mins\n'
         else:
-            activity += 'missing data for this day\n'
+            activity += '{:<10}\tmissing data for this day\n'.format(date_str)
     return activity + '```'
 
 
