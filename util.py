@@ -40,7 +40,7 @@ def get_activity() -> str:
         activity += f"I coded for {data['human_readable_total_including_other_language']} in the last 7 days\n"
     else:
         activity += 'missing data for this week\n'
-    activity += '\t\t|🕐      🕗     🕓      🕛|\tcoding hours\n'
+    activity += '{:<10}\t|🕐      🕗     🕓      🕛|\tcoding hours\n'.format('')
     for i in range(6, -1, -1):
         res = requests.get(DURATION_URL + date[i].strftime('%Y-%m-%d'), headers=headers)
         date_str = f"{date[i].strftime('%m-%d %a')}\t"
