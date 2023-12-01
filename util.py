@@ -7,7 +7,7 @@ import os
 filled_char = '█'
 empty_char = '░'
 STAT_URL = 'https://wakatime.com/api/v1/users/current/stats/last_7_days'
-DURATION_URL = 'https://wakatime.com/api/v1/users/current/durations?date='
+DURATION_URL = 'https://wakatime.com/api/v1/users/current/durations'
 API_Key = os.environ.get('WAKATIME_API_KEY')
 headers = {'Authorization': 'Basic ' + base64.b64encode(API_Key.encode('utf-8')).decode('utf-8')}
 response = requests.get(STAT_URL, headers=headers)
@@ -40,9 +40,9 @@ def get_activity() -> str:
         activity += f"I coded for {data['human_readable_total_including_other_language']} in the last 7 days\n"
     else:
         activity += 'missing data for this week\n'
-    activity += '{:<10}\t|🕐      🕗     🕓      🕛|\tcoding hours\n'.format('')
+    activity += '{:<10}\t|㍙      ㍠     ㍨      ㍰|\tcoding hours\n'.format('')
     for i in range(6, -1, -1):
-        res = requests.get(DURATION_URL + date[i].strftime('%Y-%m-%d'), headers=headers)
+        res = requests.get(DURATION_URL, headers=headers, params={'date': date[i].strftime('%Y-%m-%d')})
         date_str = f"{date[i].strftime('%m-%d %a')}\t"
         if res.status_code == 200:
             active = [False] * 24
@@ -112,16 +112,16 @@ def get_os() -> str:
     Get operating systems.
     :return: string of operating systems with Markdown formatting
     """
-    os = '\n\n🖥️ My operating systems \n\n```text\n'
+    sys = '\n\n🖥️ My operating systems \n\n```text\n'
     if response.status_code == 200:
         oses = data['operating_systems']
         oses.sort(key=lambda x: x['percent'], reverse=True)
         for o in oses:
-            os += "{:<15}\t{:<20}\t{:<}\n".format(o['name'], o['text'],
-                                                  convert_to_progress_bar(o['percent']))
+            sys += "{:<15}\t{:<20}\t{:<}\n".format(o['name'], o['text'],
+                                                   convert_to_progress_bar(o['percent']))
     else:
-        os += 'missing data for this week\n'
-    return os + '```'
+        sys += 'missing data for this week\n'
+    return sys + '```'
 
 
 def get_project() -> str:
@@ -160,3 +160,13 @@ def get_dependency() -> str:
     else:
         dependency += 'missing data for this week\n'
     return dependency + '```'
+
+
+def get_time_info():
+    """
+    Get time info.
+    :return: string of time info with Markdown formatting
+    """
+    time_info = '\n\n🌏 Timezone: `Asia/Shanghai`'
+    time_info += f"\n\n⏰ Updated on `{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`"
+    return time_info
