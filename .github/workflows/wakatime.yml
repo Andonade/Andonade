@@ -1,7 +1,7 @@
 name: WakaTime README
 on:
   schedule:
-    - cron: '40 15 * * *'
+    - cron: '0 16 * * *'
 jobs:
   update-readme:
     name: Update this repo's README with stats from WakaTime
