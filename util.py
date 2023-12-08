@@ -40,12 +40,12 @@ def get_activity() -> str:
         activity += f"I coded for {data['human_readable_total_including_other_language']} in the last 7 days\n"
     else:
         activity += 'missing data for this week\n'
-    activity += '{:<10}\t\t|1      8      16      24|\tcoding hours\n'.format('')
+    activity += '{:<10}\t\t|1      4       8      12      16       20       24|\tcoding hours\n'.format('')
     for i in range(6, -1, -1):
         res = requests.get(DURATION_URL, headers=headers, params={'date': date[i].strftime('%Y-%m-%d')})
         date_str = f"{date[i].strftime('%m-%d %a')}\t"
         if res.status_code == 200:
-            active = [False] * 24
+            active = [False] * 48
             projects = json.loads(res.text)['data']
             total = 0.0
             hour_str = '|'
@@ -53,14 +53,21 @@ def get_activity() -> str:
                 start_dt = datetime.datetime.fromtimestamp(p['time'])
                 end_dt = datetime.datetime.fromtimestamp(p['time'] + p['duration'])
                 total += p['duration']
-                for hr in range(start_dt.hour, end_dt.hour + 1):
-                    active[hr] = True
-            for hr in range(24):
+                if start_dt.minute <= 30:
+                    active[start_dt.hour * 2] = True
+                active[start_dt.hour * 2 + 1] = True
+                active[end_dt.hour * 2] = True
+                if end_dt.minute > 30:
+                    active[end_dt.hour * 2 + 1] = True
+                for hr in range(start_dt.hour + 1, end_dt.hour):
+                    active[2 * hr] = True
+                    active[2 * hr + 1] = True
+            for hr in range(48):
                 hour_str += filled_char if active[hr] else empty_char
             hour_str += '|'
             total = round(total / 60)
             hours, minutes = divmod(total, 60)
-            activity += '{:<10}\t{:<30}\t'.format(date_str, hour_str)
+            activity += '{:<10}\t{:<50}\t'.format(date_str, hour_str)
             if hours > 1:
                 activity += f'{hours} hrs '
             elif hours == 1:
