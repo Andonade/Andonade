@@ -24,7 +24,7 @@ def convert_to_progress_bar(percentage: float, length: int = 25) -> str:
     filled_length = int(length * percentage / 100.0)
     empty_length = length - filled_length
     progress_bar = filled_char * filled_length + empty_char * empty_length
-    percentage_text = f' {percentage}%'
+    percentage_text = f'\t{percentage}%'
     progress_bar += percentage_text
     return progress_bar
 
